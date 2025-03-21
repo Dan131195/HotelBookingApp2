@@ -13,7 +13,6 @@ namespace HotelBookingApp2.Services
             _context = context;
         }
 
-        // Ritorna tutte le camere
         public async Task<IEnumerable<Camera>> GetAllAsync()
         {
             return await _context.Camere
@@ -21,7 +20,6 @@ namespace HotelBookingApp2.Services
                 .ToListAsync();
         }
 
-        // Ritorna una camera per ID
         public async Task<Camera?> GetByIdAsync(Guid id)
         {
             return await _context.Camere
@@ -29,7 +27,6 @@ namespace HotelBookingApp2.Services
                 .FirstOrDefaultAsync(c => c.CameraId == id);
         }
 
-        // Crea una nuova camera
         public async Task CreateAsync(Camera camera)
         {
             if (camera == null)
@@ -39,7 +36,6 @@ namespace HotelBookingApp2.Services
             await _context.SaveChangesAsync();
         }
 
-        // Aggiorna una camera esistente
         public async Task UpdateAsync(Camera camera)
         {
             if (camera == null)
@@ -49,7 +45,6 @@ namespace HotelBookingApp2.Services
             if (existingCamera == null)
                 throw new InvalidOperationException("Camera non trovata.");
 
-            // Puoi anche usare AutoMapper o simile per copiare i dati
             existingCamera.Numero = camera.Numero;
             existingCamera.Tipo = camera.Tipo;
             existingCamera.Prezzo = camera.Prezzo;
@@ -59,7 +54,6 @@ namespace HotelBookingApp2.Services
             await _context.SaveChangesAsync();
         }
 
-        // Elimina una camera per ID
         public async Task DeleteAsync(Guid id)
         {
             var camera = await _context.Camere.FindAsync(id);
