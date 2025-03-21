@@ -1,29 +1,21 @@
 ﻿@model HotelBookingApp2.Models.Prenotazione
 
-@{
-    ViewData["Title"] = "Dettagli Prenotazione";
-}
-
-<h2>@ViewData["Title"]</h2>
-
+<h2>Dettagli Prenotazione</h2>
 <dl class="row">
     <dt class="col-sm-2">Cliente</dt>
-    <dd class="col-sm-10">@Model.Cliente?.Nome</dd>
+    <dd class="col-sm-10">@Model.Cliente?.Cognome @Model.Cliente?.Nome</dd>
 
     <dt class="col-sm-2">Camera</dt>
-    <dd class="col-sm-10">@Model.Camera?.Numero</dd>
+    <dd class="col-sm-10">@Model.Camera?.Tipo</dd>
 
-    <dt class="col-sm-2">Data Inizio</dt>
-    <dd class="col-sm-10">@Model.DataInizio.ToShortDateString()</dd>
-
-    <dt class="col-sm-2">Data Fine</dt>
-    <dd class="col-sm-10">@Model.DataFine.ToShortDateString()</dd>
+    <dt class="col-sm-2">Periodo</dt>
+    <dd class="col-sm-10">@Model.DataInizio.ToShortDateString() - @Model.DataFine.ToShortDateString()</dd>
 
     <dt class="col-sm-2">Stato</dt>
     <dd class="col-sm-10">@Model.Stato</dd>
 
     <dt class="col-sm-2">Creato da</dt>
-    <dd class="col-sm-10">@Model.CreatedById</dd>
+    <dd class="col-sm-10">@Model.CreatedBy?.UserName</dd>
 </dl>
-
 <a asp-action="Index" class="btn btn-secondary">Torna alla lista</a>
+

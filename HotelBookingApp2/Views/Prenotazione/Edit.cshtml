@@ -1,9 +1,42 @@
 ﻿@model HotelBookingApp2.ViewModels.PrenotazioneViewModel
-
 @{
     ViewData["Title"] = "Modifica Prenotazione";
-    ViewData["Action"] = "Edit";
 }
 
 <h2>@ViewData["Title"]</h2>
-<partial name="_PrenotazioneForm" model="Model" />
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="PrenotazioneId" />
+
+    <div class="form-group">
+        <label asp-for="ClienteId"></label>
+        <select asp-for="ClienteId" asp-items="Model.Clienti" class="form-control"></select>
+        <span asp-validation-for="ClienteId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CameraId"></label>
+        <select asp-for="CameraId" asp-items="Model.Camere" class="form-control"></select>
+        <span asp-validation-for="CameraId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DataInizio"></label>
+        <input asp-for="DataInizio" class="form-control" />
+        <span asp-validation-for="DataInizio" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DataFine"></label>
+        <input asp-for="DataFine" class="form-control" />
+        <span asp-validation-for="DataFine" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Stato"></label>
+        <input asp-for="Stato" class="form-control" />
+        <span asp-validation-for="Stato" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salva Modifiche</button>
+</form>

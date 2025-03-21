@@ -15,7 +15,10 @@ namespace HotelBookingApp2.Controllers
         private readonly CameraService _cameraService;
         private readonly ClienteService _clienteService;
 
-        public PrenotazioneController(PrenotazioneService prenotazioneService, CameraService cameraService, ClienteService clienteService)
+        public PrenotazioneController(
+            PrenotazioneService prenotazioneService,
+            CameraService cameraService,
+            ClienteService clienteService)
         {
             _prenotazioneService = prenotazioneService;
             _cameraService = cameraService;
@@ -26,6 +29,7 @@ namespace HotelBookingApp2.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
+
             var prenotazioni = await _prenotazioneService.GetAllAsync(userId, isAdmin);
             return View(prenotazioni);
         }
@@ -34,8 +38,10 @@ namespace HotelBookingApp2.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
+
             var prenotazione = await _prenotazioneService.GetByIdAsync(id, userId, isAdmin);
             if (prenotazione == null) return NotFound();
+
             return View(prenotazione);
         }
 
@@ -51,8 +57,8 @@ namespace HotelBookingApp2.Controllers
             {
                 DataInizio = DateTime.Today,
                 DataFine = DateTime.Today.AddDays(1),
-                Camere = new SelectList(camere, "CameraId", "Numero"),
-                Clienti = new SelectList(clienti, "ClienteId", "Nome")
+                Camere = new SelectList(camere, "CameraId", "Tipo"),
+                Clienti = new SelectList(clienti, "ClienteId", "Cognome")
             };
 
             return View(vm);
@@ -67,14 +73,13 @@ namespace HotelBookingApp2.Controllers
 
             if (!ModelState.IsValid)
             {
-                vm.Camere = new SelectList(await _cameraService.GetAllAsync(), "CameraId", "Numero", vm.CameraId);
-                vm.Clienti = new SelectList(await _clienteService.GetAllAsync(userId, isAdmin), "ClienteId", "Nome", vm.ClienteId);
+                vm.Camere = new SelectList(await _cameraService.GetAllAsync(), "CameraId", "Tipo", vm.CameraId);
+                vm.Clienti = new SelectList(await _clienteService.GetAllAsync(userId, isAdmin), "ClienteId", "Cognome", vm.ClienteId);
                 return View(vm);
             }
 
             var prenotazione = new Prenotazione
             {
-                PrenotazioneId = Guid.NewGuid(),
                 ClienteId = vm.ClienteId,
                 CameraId = vm.CameraId,
                 DataInizio = vm.DataInizio,
@@ -91,8 +96,8 @@ namespace HotelBookingApp2.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
-            var prenotazione = await _prenotazioneService.GetByIdAsync(id, userId, isAdmin);
 
+            var prenotazione = await _prenotazioneService.GetByIdAsync(id, userId, isAdmin);
             if (prenotazione == null) return NotFound();
 
             var camere = await _cameraService.GetAllAsync();
@@ -106,8 +111,8 @@ namespace HotelBookingApp2.Controllers
                 DataInizio = prenotazione.DataInizio,
                 DataFine = prenotazione.DataFine,
                 Stato = prenotazione.Stato,
-                Camere = new SelectList(camere, "CameraId", "Numero", prenotazione.CameraId),
-                Clienti = new SelectList(clienti, "ClienteId", "Nome", prenotazione.ClienteId)
+                Camere = new SelectList(camere, "CameraId", "Tipo", prenotazione.CameraId),
+                Clienti = new SelectList(clienti, "ClienteId", "Cognome", prenotazione.ClienteId)
             };
 
             return View(vm);
@@ -122,21 +127,19 @@ namespace HotelBookingApp2.Controllers
 
             if (!ModelState.IsValid)
             {
-                vm.Camere = new SelectList(await _cameraService.GetAllAsync(), "CameraId", "Numero", vm.CameraId);
-                vm.Clienti = new SelectList(await _clienteService.GetAllAsync(userId, isAdmin), "ClienteId", "Nome", vm.ClienteId);
+                vm.Camere = new SelectList(await _cameraService.GetAllAsync(), "CameraId", "Tipo", vm.CameraId);
+                vm.Clienti = new SelectList(await _clienteService.GetAllAsync(userId, isAdmin), "ClienteId", "Cognome", vm.ClienteId);
                 return View(vm);
             }
 
-            var prenotazione = new Prenotazione
-            {
-                PrenotazioneId = vm.PrenotazioneId,
-                ClienteId = vm.ClienteId,
-                CameraId = vm.CameraId,
-                DataInizio = vm.DataInizio,
-                DataFine = vm.DataFine,
-                Stato = vm.Stato,
-                CreatedById = userId
-            };
+            var prenotazione = await _prenotazioneService.GetByIdAsync(vm.PrenotazioneId, userId, isAdmin);
+            if (prenotazione == null) return NotFound();
+
+            prenotazione.ClienteId = vm.ClienteId;
+            prenotazione.CameraId = vm.CameraId;
+            prenotazione.DataInizio = vm.DataInizio;
+            prenotazione.DataFine = vm.DataFine;
+            prenotazione.Stato = vm.Stato;
 
             await _prenotazioneService.UpdateAsync(prenotazione);
             return RedirectToAction(nameof(Index));
@@ -146,8 +149,10 @@ namespace HotelBookingApp2.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
+
             var prenotazione = await _prenotazioneService.GetByIdAsync(id, userId, isAdmin);
             if (prenotazione == null) return NotFound();
+
             return View(prenotazione);
         }
 

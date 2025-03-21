@@ -15,15 +15,13 @@ namespace HotelBookingApp2.Services
 
         public async Task<IEnumerable<Prenotazione>> GetAllAsync(string userId, bool isAdmin)
         {
-            var query = _context.Prenotazioni
+            return await _context.Prenotazioni
                 .Include(p => p.Cliente)
                 .Include(p => p.Camera)
-                .AsQueryable();
-
-            if (!isAdmin)
-                query = query.Where(p => p.CreatedById == userId);
-
-            return await query.ToListAsync();
+                .Include(p => p.CreatedBy)
+                .Where(p => isAdmin || p.CreatedById == userId)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<Prenotazione?> GetByIdAsync(Guid id, string userId, bool isAdmin)
@@ -31,6 +29,7 @@ namespace HotelBookingApp2.Services
             var prenotazione = await _context.Prenotazioni
                 .Include(p => p.Cliente)
                 .Include(p => p.Camera)
+                .Include(p => p.CreatedBy)
                 .FirstOrDefaultAsync(p => p.PrenotazioneId == id);
 
             if (prenotazione == null) return null;
