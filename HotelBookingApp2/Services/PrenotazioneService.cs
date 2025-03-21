@@ -85,10 +85,13 @@ namespace HotelBookingApp2.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            var prenotazione = await _context.Prenotazioni.FindAsync(id);
+            var prenotazione = await _context.Prenotazioni
+                .Include(p => p.Camera)
+                .FirstOrDefaultAsync(p => p.PrenotazioneId == id);
+
             if (prenotazione != null)
             {
-                var camera = await _context.Camere.FindAsync(prenotazione.CameraId);
+                var camera = prenotazione.Camera;
                 if (camera != null)
                 {
                     camera.Numero += 1;

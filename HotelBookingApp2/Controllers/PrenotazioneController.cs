@@ -166,6 +166,7 @@ namespace HotelBookingApp2.Controllers
             return View(prenotazione);
         }
 
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -173,5 +174,6 @@ namespace HotelBookingApp2.Controllers
             await _prenotazioneService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
+
     }
 }
