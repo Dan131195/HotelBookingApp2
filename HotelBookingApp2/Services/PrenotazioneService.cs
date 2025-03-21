@@ -1,5 +1,4 @@
-﻿
-using HotelBookingApp2.Data;
+﻿using HotelBookingApp2.Data;
 using HotelBookingApp2.Models;
 using Microsoft.EntityFrameworkCore;
 

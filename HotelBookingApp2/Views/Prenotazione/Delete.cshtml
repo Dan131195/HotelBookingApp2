@@ -1,17 +1,27 @@
 ﻿@model HotelBookingApp2.Models.Prenotazione
 
-<h2>Elimina Prenotazione</h2>
+@{
+    ViewData["Title"] = "Elimina Prenotazione";
+}
 
-<h4>Sei sicuro di voler eliminare questa prenotazione?</h4>
+<h2>Conferma Eliminazione</h2>
 
-<p>
-    Cliente: @Model.Cliente.Nome @Model.Cliente.Cognome <br />
-    Camera: @Model.Camera.Numero <br />
-    Dal: @Model.DataInizio.ToShortDateString() al @Model.DataFine.ToShortDateString()
-</p>
+<dl class="row">
+    <dt class="col-sm-2">Cliente</dt>
+    <dd class="col-sm-10">@Model.Cliente?.Nome</dd>
 
-<form asp-action="Delete">
+    <dt class="col-sm-2">Camera</dt>
+    <dd class="col-sm-10">@Model.Camera?.Numero</dd>
+
+    <dt class="col-sm-2">Date</dt>
+    <dd class="col-sm-10">@Model.DataInizio.ToShortDateString() - @Model.DataFine.ToShortDateString()</dd>
+
+    <dt class="col-sm-2">Stato</dt>
+    <dd class="col-sm-10">@Model.Stato</dd>
+</dl>
+
+<form asp-action="DeleteConfirmed" method="post">
     <input type="hidden" asp-for="PrenotazioneId" />
-    <button type="submit" class="btn btn-danger">Conferma</button>
+    <button type="submit" class="btn btn-danger">Elimina</button>
     <a asp-action="Index" class="btn btn-secondary">Annulla</a>
 </form>

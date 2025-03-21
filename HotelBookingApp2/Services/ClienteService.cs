@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using HotelBookingApp2.Data;
 using HotelBookingApp2.Models;
 
@@ -14,6 +13,21 @@ namespace HotelBookingApp2.Services
             _context = context;
         }
 
+        // ✅ Metodo compatibile con PrenotazioneController
+        public async Task<IEnumerable<Cliente>> GetAllAsync(string userId, bool isAdmin)
+        {
+            var query = _context.Clienti
+                .Include(c => c.CreatedBy)
+                .Include(c => c.Prenotazioni)
+                .AsQueryable();
+
+            if (!isAdmin)
+                query = query.Where(c => c.CreatedById == userId);
+
+            return await query.ToListAsync();
+        }
+
+        // ✅ Metodo usato nel ClienteController
         public async Task<IEnumerable<Cliente>> GetAllClientsAsync()
         {
             return await _context.Clienti
@@ -22,6 +36,7 @@ namespace HotelBookingApp2.Services
                 .ToListAsync();
         }
 
+        // ✅ Per Details, Edit, Delete
         public async Task<Cliente?> GetClienteByIdAsync(Guid id)
         {
             return await _context.Clienti

@@ -11,6 +11,7 @@
 <table class="table mt-3">
     <thead>
         <tr>
+            <th>Id</th>
             <th>Numero</th>
             <th>Tipo</th>
             <th>Prezzo</th>
@@ -22,6 +23,7 @@
     @foreach (var camera in Model)
     {
         <tr>
+            <td>@camera.CameraId</td>
             <td>@camera.Numero</td>
             <td>@camera.Tipo</td>
             <td>@camera.Prezzo</td>

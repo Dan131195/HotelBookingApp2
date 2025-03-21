@@ -1,13 +1,14 @@
 ﻿using HotelBookingApp2.Models;
 using HotelBookingApp2.Services;
+using HotelBookingApp2.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
-using HotelBookingApp2.Models;
 
 namespace HotelBookingApp2.Controllers
 {
+    [Authorize]
     public class PrenotazioneController : Controller
     {
         private readonly PrenotazioneService _prenotazioneService;
@@ -25,36 +26,137 @@ namespace HotelBookingApp2.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
-
-            var lista = await _prenotazioneService.GetAllAsync(userId, isAdmin);
-            return View(lista);
+            var prenotazioni = await _prenotazioneService.GetAllAsync(userId, isAdmin);
+            return View(prenotazioni);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> EditModal(Guid id)
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+            var prenotazione = await _prenotazioneService.GetByIdAsync(id, userId, isAdmin);
+            if (prenotazione == null) return NotFound();
+            return View(prenotazione);
+        }
+
+        public async Task<IActionResult> Create()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
 
-            var prenotazione = await _prenotazioneService.GetByIdAsync(id, userId, isAdmin);
-            if (prenotazione == null) return NotFound();
+            var camere = await _cameraService.GetAllAsync();
+            var clienti = await _clienteService.GetAllAsync(userId, isAdmin);
 
-            //ViewBag.Clienti = new SelectList(await _clienteService.GetAllAsync(userId, isAdmin), "ClienteId", "Nome", prenotazione.ClienteId);
-            ViewBag.Camere = new SelectList(await _cameraService.GetAllAsync(), "CameraId", "Numero", prenotazione.CameraId);
+            var vm = new PrenotazioneViewModel
+            {
+                DataInizio = DateTime.Today,
+                DataFine = DateTime.Today.AddDays(1),
+                Camere = new SelectList(camere, "CameraId", "Numero"),
+                Clienti = new SelectList(clienti, "ClienteId", "Nome")
+            };
 
-            return PartialView("_EditModal", prenotazione);
+            return View(vm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateModal(Prenotazione model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(PrenotazioneViewModel vm)
         {
-            if (!ModelState.IsValid) return BadRequest("Modello non valido");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
 
-            await _prenotazioneService.UpdateAsync(model);
-            var updated = await _prenotazioneService.GetByIdAsync(model.PrenotazioneId, model.CreatedById, true);
-            return PartialView("_RowPartial", updated);
+            if (!ModelState.IsValid)
+            {
+                vm.Camere = new SelectList(await _cameraService.GetAllAsync(), "CameraId", "Numero", vm.CameraId);
+                vm.Clienti = new SelectList(await _clienteService.GetAllAsync(userId, isAdmin), "ClienteId", "Nome", vm.ClienteId);
+                return View(vm);
+            }
+
+            var prenotazione = new Prenotazione
+            {
+                PrenotazioneId = Guid.NewGuid(),
+                ClienteId = vm.ClienteId,
+                CameraId = vm.CameraId,
+                DataInizio = vm.DataInizio,
+                DataFine = vm.DataFine,
+                Stato = vm.Stato,
+                CreatedById = userId
+            };
+
+            await _prenotazioneService.CreateAsync(prenotazione);
+            return RedirectToAction(nameof(Index));
         }
 
-        // CreateModal & DeleteModal (simili)
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+            var prenotazione = await _prenotazioneService.GetByIdAsync(id, userId, isAdmin);
+
+            if (prenotazione == null) return NotFound();
+
+            var camere = await _cameraService.GetAllAsync();
+            var clienti = await _clienteService.GetAllAsync(userId, isAdmin);
+
+            var vm = new PrenotazioneViewModel
+            {
+                PrenotazioneId = prenotazione.PrenotazioneId,
+                ClienteId = prenotazione.ClienteId,
+                CameraId = prenotazione.CameraId,
+                DataInizio = prenotazione.DataInizio,
+                DataFine = prenotazione.DataFine,
+                Stato = prenotazione.Stato,
+                Camere = new SelectList(camere, "CameraId", "Numero", prenotazione.CameraId),
+                Clienti = new SelectList(clienti, "ClienteId", "Nome", prenotazione.ClienteId)
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(PrenotazioneViewModel vm)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+
+            if (!ModelState.IsValid)
+            {
+                vm.Camere = new SelectList(await _cameraService.GetAllAsync(), "CameraId", "Numero", vm.CameraId);
+                vm.Clienti = new SelectList(await _clienteService.GetAllAsync(userId, isAdmin), "ClienteId", "Nome", vm.ClienteId);
+                return View(vm);
+            }
+
+            var prenotazione = new Prenotazione
+            {
+                PrenotazioneId = vm.PrenotazioneId,
+                ClienteId = vm.ClienteId,
+                CameraId = vm.CameraId,
+                DataInizio = vm.DataInizio,
+                DataFine = vm.DataFine,
+                Stato = vm.Stato,
+                CreatedById = userId
+            };
+
+            await _prenotazioneService.UpdateAsync(prenotazione);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+            var prenotazione = await _prenotazioneService.GetByIdAsync(id, userId, isAdmin);
+            if (prenotazione == null) return NotFound();
+            return View(prenotazione);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            await _prenotazioneService.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

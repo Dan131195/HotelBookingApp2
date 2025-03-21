@@ -1,19 +1,29 @@
 ﻿@model HotelBookingApp2.Models.Prenotazione
 
-<h2>Dettagli Prenotazione</h2>
+@{
+    ViewData["Title"] = "Dettagli Prenotazione";
+}
+
+<h2>@ViewData["Title"]</h2>
 
 <dl class="row">
-    <dt class="col-sm-3">Cliente</dt>
-    <dd class="col-sm-9">@Model.Cliente.Nome @Model.Cliente.Cognome</dd>
+    <dt class="col-sm-2">Cliente</dt>
+    <dd class="col-sm-10">@Model.Cliente?.Nome</dd>
 
-    <dt class="col-sm-3">Camera</dt>
-    <dd class="col-sm-9">@Model.Camera.Numero</dd>
+    <dt class="col-sm-2">Camera</dt>
+    <dd class="col-sm-10">@Model.Camera?.Numero</dd>
 
-    <dt class="col-sm-3">Periodo</dt>
-    <dd class="col-sm-9">@Model.DataInizio.ToShortDateString() - @Model.DataFine.ToShortDateString()</dd>
+    <dt class="col-sm-2">Data Inizio</dt>
+    <dd class="col-sm-10">@Model.DataInizio.ToShortDateString()</dd>
 
-    <dt class="col-sm-3">Stato</dt>
-    <dd class="col-sm-9">@Model.Stato</dd>
+    <dt class="col-sm-2">Data Fine</dt>
+    <dd class="col-sm-10">@Model.DataFine.ToShortDateString()</dd>
+
+    <dt class="col-sm-2">Stato</dt>
+    <dd class="col-sm-10">@Model.Stato</dd>
+
+    <dt class="col-sm-2">Creato da</dt>
+    <dd class="col-sm-10">@Model.CreatedById</dd>
 </dl>
 
 <a asp-action="Index" class="btn btn-secondary">Torna alla lista</a>
