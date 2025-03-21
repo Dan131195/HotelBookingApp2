@@ -6,33 +6,38 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<a asp-action="Create" class="btn btn-success">Aggiungi Camera</a>
+<a asp-action="Create" class="btn btn-success mb-3">Aggiungi Camera</a>
 
-<table class="table mt-3">
+<table class="table table-bordered">
     <thead>
         <tr>
-            <th>Id</th>
-            <th>Numero</th>
             <th>Tipo</th>
             <th>Prezzo</th>
-            <th>Disponibilità</th>
+            <th>Quantità disponibile</th>
             <th>Azioni</th>
         </tr>
     </thead>
     <tbody>
-    @foreach (var camera in Model)
-    {
-        <tr>
-            <td>@camera.CameraId</td>
-            <td>@camera.Numero</td>
-            <td>@camera.Tipo</td>
-            <td>@camera.Prezzo</td>
-            <td>@(camera.Disponibilita ? "Sì" : "No")</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@camera.CameraId" class="btn btn-warning btn-sm">Modifica</a>
-                <a asp-action="Delete" asp-route-id="@camera.CameraId" class="btn btn-danger btn-sm">Elimina</a>
-            </td>
-        </tr>
-    }
+        @foreach (var camera in Model)
+        {
+            <tr>
+                <td>@camera.Tipo</td>
+                <td>@camera.Prezzo.ToString("C")</td>
+                <td>
+                    @if (camera.Numero > 0)
+                    {
+                        <span class="badge bg-success">@camera.Numero disponibile</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Non disponibile</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@camera.CameraId" class="btn btn-warning btn-sm">Modifica</a>
+                    <a asp-action="Delete" asp-route-id="@camera.CameraId" class="btn btn-danger btn-sm">Elimina</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

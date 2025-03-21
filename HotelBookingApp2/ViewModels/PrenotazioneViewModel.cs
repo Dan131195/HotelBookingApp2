@@ -7,20 +7,22 @@ namespace HotelBookingApp2.ViewModels
     {
         public Guid PrenotazioneId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Il cliente è obbligatorio")]
         public Guid ClienteId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "La camera è obbligatoria")]
         public Guid CameraId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "La data di inizio è obbligatoria")]
+        [DataType(DataType.Date)]
         public DateTime DataInizio { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "La data di fine è obbligatoria")]
+        [DataType(DataType.Date)]
         public DateTime DataFine { get; set; }
 
-        [Required]
-        public string Stato { get; set; }
+        [Required(ErrorMessage = "Lo stato è obbligatorio")]
+        public string Stato { get; set; } = string.Empty;
 
         public SelectList? Clienti { get; set; }
         public SelectList? Camere { get; set; }

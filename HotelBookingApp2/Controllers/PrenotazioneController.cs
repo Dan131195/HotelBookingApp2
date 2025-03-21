@@ -50,7 +50,7 @@ namespace HotelBookingApp2.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
 
-            var camere = await _cameraService.GetAllAsync();
+            var camere = (await _cameraService.GetAllAsync()).Where(c => c.Numero > 0).ToList();
             var clienti = await _clienteService.GetAllAsync(userId, isAdmin);
 
             var vm = new PrenotazioneViewModel
@@ -64,6 +64,7 @@ namespace HotelBookingApp2.Controllers
             return View(vm);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PrenotazioneViewModel vm)
@@ -73,8 +74,10 @@ namespace HotelBookingApp2.Controllers
 
             if (!ModelState.IsValid)
             {
-                vm.Camere = new SelectList(await _cameraService.GetAllAsync(), "CameraId", "Tipo", vm.CameraId);
-                vm.Clienti = new SelectList(await _clienteService.GetAllAsync(userId, isAdmin), "ClienteId", "Cognome", vm.ClienteId);
+                var camere = (await _cameraService.GetAllAsync()).Where(c => c.Disponibilita).ToList();
+                var clienti = await _clienteService.GetAllAsync(userId, isAdmin);
+                vm.Camere = new SelectList(camere, "CameraId", "Tipo", vm.CameraId);
+                vm.Clienti = new SelectList(clienti, "ClienteId", "Cognome", vm.ClienteId);
                 return View(vm);
             }
 
@@ -91,7 +94,6 @@ namespace HotelBookingApp2.Controllers
             await _prenotazioneService.CreateAsync(prenotazione);
             return RedirectToAction(nameof(Index));
         }
-
         public async Task<IActionResult> Edit(Guid id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -111,7 +113,7 @@ namespace HotelBookingApp2.Controllers
                 DataInizio = prenotazione.DataInizio,
                 DataFine = prenotazione.DataFine,
                 Stato = prenotazione.Stato,
-                Camere = new SelectList(camere, "CameraId", "Tipo", prenotazione.CameraId),
+                Camere = new SelectList(camere.Where(c => c.Numero > 0 || c.CameraId == prenotazione.CameraId), "CameraId", "Tipo", prenotazione.CameraId),
                 Clienti = new SelectList(clienti, "ClienteId", "Cognome", prenotazione.ClienteId)
             };
 
@@ -127,8 +129,15 @@ namespace HotelBookingApp2.Controllers
 
             if (!ModelState.IsValid)
             {
-                vm.Camere = new SelectList(await _cameraService.GetAllAsync(), "CameraId", "Tipo", vm.CameraId);
-                vm.Clienti = new SelectList(await _clienteService.GetAllAsync(userId, isAdmin), "ClienteId", "Cognome", vm.ClienteId);
+                var camereDisponibili = (await _cameraService.GetAllAsync())
+                    .Where(c => c.Numero > 0 || c.CameraId == vm.CameraId)
+                    .ToList();
+
+                var clienti = await _clienteService.GetAllAsync(userId, isAdmin);
+
+                vm.Camere = new SelectList(camereDisponibili, "CameraId", "Tipo", vm.CameraId);
+                vm.Clienti = new SelectList(clienti, "ClienteId", "Cognome", vm.ClienteId);
+
                 return View(vm);
             }
 
@@ -144,6 +153,7 @@ namespace HotelBookingApp2.Controllers
             await _prenotazioneService.UpdateAsync(prenotazione);
             return RedirectToAction(nameof(Index));
         }
+
 
         public async Task<IActionResult> Delete(Guid id)
         {
