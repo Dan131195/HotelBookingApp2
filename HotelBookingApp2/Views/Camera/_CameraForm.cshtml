@@ -1,0 +1,33 @@
+﻿@model HotelBookingApp2.ViewModels.CameraViewModel
+
+<form asp-action="@ViewData["Action"]" method="post">
+    @if (Model.CameraId != null)
+    {
+        <input type="hidden" asp-for="CameraId" />
+    }
+
+    <div class="form-group">
+        <label asp-for="Numero"></label>
+        <input asp-for="Numero" class="form-control" />
+        <span asp-validation-for="Numero" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Tipo"></label>
+        <input asp-for="Tipo" class="form-control" />
+        <span asp-validation-for="Tipo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Prezzo"></label>
+        <input asp-for="Prezzo" class="form-control" />
+        <span asp-validation-for="Prezzo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group form-check">
+        <input asp-for="Disponibilita" class="form-check-input" />
+        <label asp-for="Disponibilita" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salva</button>
+</form>

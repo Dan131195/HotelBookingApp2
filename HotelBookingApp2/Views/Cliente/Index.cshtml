@@ -1,0 +1,41 @@
+﻿@model IEnumerable<HotelBookingApp2.Models.Cliente>
+
+@{
+	ViewData["Title"] = "Clienti";
+}
+
+<h2>Lista Clienti</h2>
+
+
+<a asp-controller="Cliente" asp-action="Create" class="btn btn-primary mb-5">Aggiungi Nuovo Cliente</a>
+
+
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>Nome</th>
+			<th>Cognome</th>
+			<th>Email</th>
+			<th>Telefono</th>
+			<th>Creato da</th>
+			<th>Azioni</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var cliente in Model)
+		{
+			<tr>
+				<td>@cliente.Nome</td>
+				<td>@cliente.Cognome</td>
+				<td>@cliente.Email</td>
+				<td>@cliente.Telefono</td>
+				<td>@cliente.CreatedBy</td>
+				<td>
+					<a asp-action="Details" asp-route-id="@cliente.ClienteId" class="btn btn-sm btn-info">Dettagli</a>
+					<a asp-action="Edit" asp-route-id="@cliente.ClienteId" class="btn btn-sm btn-warning">Modifica</a>
+					<a asp-action="Delete" asp-route-id="@cliente.ClienteId" class="btn btn-sm btn-danger">Elimina</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

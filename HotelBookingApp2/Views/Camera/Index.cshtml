@@ -1,0 +1,36 @@
+﻿@model IEnumerable<HotelBookingApp2.Models.Camera>
+
+@{
+    ViewData["Title"] = "Camere";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<a asp-action="Create" class="btn btn-success">Aggiungi Camera</a>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Numero</th>
+            <th>Tipo</th>
+            <th>Prezzo</th>
+            <th>Disponibilità</th>
+            <th>Azioni</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var camera in Model)
+    {
+        <tr>
+            <td>@camera.Numero</td>
+            <td>@camera.Tipo</td>
+            <td>@camera.Prezzo</td>
+            <td>@(camera.Disponibilita ? "Sì" : "No")</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@camera.CameraId" class="btn btn-warning btn-sm">Modifica</a>
+                <a asp-action="Delete" asp-route-id="@camera.CameraId" class="btn btn-danger btn-sm">Elimina</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<h2>Login</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@error.ErrorMessage</div>
+        }
+    </div>
+}
+
+<form asp-action="Login" method="post">
+    <input name="email" type="email" class="form-control" placeholder="Email" required />
+    <input name="password" type="password" class="form-control mt-2" placeholder="Password" required />
+    <button type="submit" class="btn btn-primary mt-2">Accedi</button>
+</form>

@@ -1,0 +1,25 @@
+﻿@model IEnumerable<HotelBookingApp2.ViewModels.UserListViewModel>
+
+@{
+    ViewData["Title"] = "Utenti Registrati";
+}
+
+<h2>Lista Utenti</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Ruolo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.Ruoli</td>
+            </tr>
+        }
+    </tbody>
+</table>

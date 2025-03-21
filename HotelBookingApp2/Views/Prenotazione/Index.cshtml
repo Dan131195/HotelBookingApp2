@@ -1,0 +1,191 @@
+﻿@model IEnumerable<HotelBookingApp2.Models.Prenotazione>
+@{
+    ViewData["Title"] = "Prenotazioni";
+}
+
+<h2>Prenotazioni</h2>
+
+@if (User.IsInRole("Admin"))
+{
+    <button class="btn btn-primary" id="btnCreate">Nuova Prenotazione</button>
+}
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Camera</th>
+            <th>Dal</th>
+            <th>Al</th>
+            <th>Stato</th>
+            @if (User.IsInRole("Admin"))
+            {
+                <th>Azioni</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Cliente.Nome @p.Cliente.Cognome</td>
+                <td>@p.Camera.Numero</td>
+                <td>@p.DataInizio.ToShortDateString()</td>
+                <td>@p.DataFine.ToShortDateString()</td>
+                <td>@p.Stato</td>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <button class="btn btn-sm btn-warning edit-btn" data-id="@p.PrenotazioneId">Modifica</button>
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="@p.PrenotazioneId">Elimina</button>
+                        <button class="btn btn-sm btn-info details-btn" data-id="@p.PrenotazioneId">Dettagli</button>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div id="modalContainer"></div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+        attachButtons();
+    });
+
+    function attachButtons() {
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', async function () {
+                const id = this.dataset.id;
+                const response = await fetch(`/Prenotazione/EditModal/${id}`);
+                const html = await response.text();
+
+                const container = document.getElementById('modalContainer');
+                if (container) {
+                    container.innerHTML = html;
+                    const modalElement = document.getElementById('editPrenotazioneModal');
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    }
+                }
+            });
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async function () {
+                const id = this.dataset.id;
+                const response = await fetch(`/Prenotazione/DeleteModal/${id}`);
+                const html = await response.text();
+
+                const container = document.getElementById('modalContainer');
+                if (container) {
+                    container.innerHTML = html;
+                    const modalElement = document.getElementById('deletePrenotazioneModal');
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    }
+                }
+            });
+        });
+
+        document.querySelectorAll('.details-btn').forEach(btn => {
+            btn.addEventListener('click', async function () {
+                const id = this.dataset.id;
+                const response = await fetch(`/Prenotazione/DetailsModal/${id}`);
+                const html = await response.text();
+
+                const container = document.getElementById('modalContainer');
+                if (container) {
+                    container.innerHTML = html;
+                    const modalElement = document.getElementById('detailsPrenotazioneModal');
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    }
+                }
+            });
+        });
+
+        const createBtn = document.getElementById('btnCreate');
+        if (createBtn) {
+            createBtn.addEventListener('click', async function () {
+                const response = await fetch('/Prenotazione/CreateModal');
+                const html = await response.text();
+
+                const container = document.getElementById('modalContainer');
+                if (container) {
+                    container.innerHTML = html;
+                    const modalElement = document.getElementById('createPrenotazioneModal');
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    }
+                }
+            });
+        }
+    }
+
+    document.addEventListener('submit', async function (e) {
+        if (e.target.matches('#editPrenotazioneForm')) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editPrenotazioneModal'));
+                modal.hide();
+                location.reload();
+            } else {
+                alert('Errore durante la modifica della prenotazione.');
+            }
+        }
+
+        if (e.target.matches('#createPrenotazioneForm')) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('createPrenotazioneModal'));
+                modal.hide();
+                location.reload();
+            } else {
+                alert('Errore durante la creazione della prenotazione.');
+            }
+        }
+
+        if (e.target.matches('#deletePrenotazioneForm')) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deletePrenotazioneModal'));
+                modal.hide();
+                location.reload();
+            } else {
+                alert('Errore durante l\'eliminazione della prenotazione.');
+            }
+        }
+    });
+
+</script>

@@ -1,0 +1,24 @@
+﻿@model HotelBookingApp2.Models.Camera
+
+@{
+    ViewData["Title"] = "Dettagli Camera";
+}
+
+<h2>Dettagli Camera</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Numero</dt>
+    <dd class="col-sm-9">@Model.Numero</dd>
+
+    <dt class="col-sm-3">Tipo</dt>
+    <dd class="col-sm-9">@Model.Tipo</dd>
+
+    <dt class="col-sm-3">Prezzo</dt>
+    <dd class="col-sm-9">@Model.Prezzo.ToString("C")</dd>
+
+    <dt class="col-sm-3">Disponibilità</dt>
+    <dd class="col-sm-9">@Model.Disponibilita</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.CameraId" class="btn btn-warning">Modifica</a>
+<a asp-action="Index" class="btn btn-secondary">Torna alla lista</a>

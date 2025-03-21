@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Home Page";
+    string firstName = "";
+    if (User.Identity.IsAuthenticated)
+    {
+        var user = await UserManager.GetUserAsync(User);
+        firstName = user?.FirstName ?? "";
+    }
+}
+
+<div class="text-center">
+    <h1 class="display-4">
+        Welcome @if (!string.IsNullOrEmpty(firstName))
+        {
+            <span>@firstName</span>
+        }
+    </h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>

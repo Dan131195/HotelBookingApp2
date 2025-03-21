@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Registrazione";
+}
+
+<h2>Registrazione</h2>
+
+<!-- MOSTRA GLI ERRORI -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@err.ErrorMessage</div>
+        }
+    </div>
+}
+
+<form asp-action="Register" method="post">
+    <div class="form-group">
+        <label>Email</label>
+        <input name="email" type="email" class="form-control" placeholder="Email" required />
+    </div>
+
+    <div class="form-group mt-2">
+        <label>Password</label>
+        <input name="password" type="password" class="form-control" placeholder="Password" required />
+    </div>
+
+    <div class="form-group mt-2">
+        <label>Nome</label>
+        <input name="firstName" type="text" class="form-control" placeholder="Nome" required />
+    </div>
+
+    <div class="form-group mt-2">
+        <label>Cognome</label>
+        <input name="lastName" type="text" class="form-control" placeholder="Cognome" required />
+    </div>
+
+    <div class="form-group mt-2">
+        <label>Ruolo</label>
+        <select name="ruolo" class="form-select">
+            <option value="User">User</option>
+            <option value="Admin">Admin</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Crea Utente</button>
+</form>

@@ -1,0 +1,29 @@
+﻿@model HotelBookingApp2.ViewModels.CameraViewModel
+
+@{
+    ViewData["Title"] = "Elimina Camera";
+}
+
+<h2>Conferma eliminazione</h2>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Numero</dt>
+        <dd class="col-sm-10">@Model.Numero</dd>
+
+        <dt class="col-sm-2">Tipo</dt>
+        <dd class="col-sm-10">@Model.Tipo</dd>
+
+        <dt class="col-sm-2">Prezzo</dt>
+        <dd class="col-sm-10">@Model.Prezzo.ToString()</dd>
+
+        <dt class="col-sm-2">Disponibile</dt>
+        <dd class="col-sm-10">@Model.Disponibilita</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="CameraId" />
+    <button type="submit" class="btn btn-danger">Elimina</button>
+    <a asp-action="Index" class="btn btn-secondary">Annulla</a>
+</form>
