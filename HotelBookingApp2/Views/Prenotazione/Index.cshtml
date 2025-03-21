@@ -1,37 +1,60 @@
 ﻿@model IEnumerable<HotelBookingApp2.Models.Prenotazione>
+
 @{
     ViewData["Title"] = "Prenotazioni";
+    var isAdmin = User.IsInRole("Admin");
+    var username = User.Identity?.Name ?? "Utente";
+    var role = isAdmin ? "Admin" : "User";
 }
 
 <h2>@ViewData["Title"]</h2>
-<a asp-action="Create" class="btn btn-success mb-3">Nuova Prenotazione</a>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Cliente</th>
-            <th>Camera</th>
-            <th>Periodo</th>
-            <th>Stato</th>
-            <th>Creato da</th>
-            <th>Azioni</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var p in Model)
-        {
+<div class="alert alert-info">
+    Sei loggato come: <strong>@username</strong> (<span>@role</span>)
+</div>
+
+@if (isAdmin)
+{
+    <a asp-action="Create" class="btn btn-success mb-3">Nuova Prenotazione</a>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">Nessuna prenotazione trovata.</div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
             <tr>
-                <td>@p.Cliente?.Cognome @p.Cliente?.Nome</td>
-                <td>@p.Camera?.Tipo</td>
-                <td>@p.DataInizio.ToShortDateString() - @p.DataFine.ToShortDateString()</td>
-                <td>@p.Stato</td>
-                <td>@p.CreatedBy?.UserName</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@p.PrenotazioneId" class="btn btn-info btn-sm">Dettagli</a>
-                    <a asp-action="Edit" asp-route-id="@p.PrenotazioneId" class="btn btn-warning btn-sm">Modifica</a>
-                    <a asp-action="Delete" asp-route-id="@p.PrenotazioneId" class="btn btn-danger btn-sm">Elimina</a>
-                </td>
+                <th>Cliente</th>
+                <th>Camera</th>
+                <th>Data Inizio</th>
+                <th>Data Fine</th>
+                <th>Stato</th>
+                <th>Azioni</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.Cliente.Cognome @p.Cliente.Nome</td>
+                    <td>@p.Camera.Tipo</td>
+                    <td>@p.DataInizio.ToShortDateString()</td>
+                    <td>@p.DataFine.ToShortDateString()</td>
+                    <td>@p.Stato</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@p.PrenotazioneId" class="btn btn-info btn-sm">Dettagli</a>
+
+                        @if (isAdmin)
+                        {
+                            <a asp-action="Edit" asp-route-id="@p.PrenotazioneId" class="btn btn-warning btn-sm">Modifica</a>
+                            <a asp-action="Delete" asp-route-id="@p.PrenotazioneId" class="btn btn-danger btn-sm">Elimina</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,4 +1,5 @@
-﻿using HotelBookingApp2.Data;
+﻿
+using HotelBookingApp2.Data;
 using HotelBookingApp2.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,6 @@ namespace HotelBookingApp2.Services
                 .Include(p => p.Cliente)
                 .Include(p => p.Camera)
                 .Include(p => p.CreatedBy)
-                .Where(p => isAdmin || p.CreatedById == userId)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -32,17 +32,11 @@ namespace HotelBookingApp2.Services
                 .Include(p => p.CreatedBy)
                 .FirstOrDefaultAsync(p => p.PrenotazioneId == id);
 
-            if (prenotazione == null || (!isAdmin && prenotazione.CreatedById != userId))
-                return null;
-
             return prenotazione;
         }
 
         public async Task CreateAsync(Prenotazione prenotazione)
         {
-            if (prenotazione == null)
-                throw new ArgumentNullException(nameof(prenotazione));
-
             var camera = await _context.Camere.FindAsync(prenotazione.CameraId);
             if (camera == null || camera.Numero <= 0)
                 throw new InvalidOperationException("La camera selezionata non è disponibile.");

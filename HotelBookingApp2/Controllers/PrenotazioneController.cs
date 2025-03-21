@@ -45,13 +45,11 @@ namespace HotelBookingApp2.Controllers
             return View(prenotazione);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var isAdmin = User.IsInRole("Admin");
-
             var camere = (await _cameraService.GetAllAsync()).Where(c => c.Numero > 0).ToList();
-            var clienti = await _clienteService.GetAllAsync(userId, isAdmin);
+            var clienti = await _clienteService.GetAllAsync(null, true);
 
             var vm = new PrenotazioneViewModel
             {
@@ -64,22 +62,21 @@ namespace HotelBookingApp2.Controllers
             return View(vm);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(PrenotazioneViewModel vm)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var isAdmin = User.IsInRole("Admin");
-
             if (!ModelState.IsValid)
             {
-                var camere = (await _cameraService.GetAllAsync()).Where(c => c.Disponibilita).ToList();
-                var clienti = await _clienteService.GetAllAsync(userId, isAdmin);
+                var camere = (await _cameraService.GetAllAsync()).Where(c => c.Numero > 0).ToList();
+                var clienti = await _clienteService.GetAllAsync(null, true);
                 vm.Camere = new SelectList(camere, "CameraId", "Tipo", vm.CameraId);
                 vm.Clienti = new SelectList(clienti, "ClienteId", "Cognome", vm.ClienteId);
                 return View(vm);
             }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var prenotazione = new Prenotazione
             {
@@ -94,6 +91,8 @@ namespace HotelBookingApp2.Controllers
             await _prenotazioneService.CreateAsync(prenotazione);
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -122,24 +121,20 @@ namespace HotelBookingApp2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(PrenotazioneViewModel vm)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var isAdmin = User.IsInRole("Admin");
-
             if (!ModelState.IsValid)
             {
-                var camereDisponibili = (await _cameraService.GetAllAsync())
-                    .Where(c => c.Numero > 0 || c.CameraId == vm.CameraId)
-                    .ToList();
-
-                var clienti = await _clienteService.GetAllAsync(userId, isAdmin);
-
-                vm.Camere = new SelectList(camereDisponibili, "CameraId", "Tipo", vm.CameraId);
+                var camere = await _cameraService.GetAllAsync();
+                var clienti = await _clienteService.GetAllAsync(null, true);
+                vm.Camere = new SelectList(camere, "CameraId", "Tipo", vm.CameraId);
                 vm.Clienti = new SelectList(clienti, "ClienteId", "Cognome", vm.ClienteId);
-
                 return View(vm);
             }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
 
             var prenotazione = await _prenotazioneService.GetByIdAsync(vm.PrenotazioneId, userId, isAdmin);
             if (prenotazione == null) return NotFound();
@@ -154,7 +149,7 @@ namespace HotelBookingApp2.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -166,14 +161,14 @@ namespace HotelBookingApp2.Controllers
             return View(prenotazione);
         }
 
-
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             await _prenotazioneService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
-
     }
+
 }
